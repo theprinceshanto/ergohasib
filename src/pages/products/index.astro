@@ -17,22 +17,11 @@ const options = productKinds.map((k) => ({
 <Base title="Products" description="Products from Aelnir, the studio Hasib founded, shown as outcomes: who they help and what changed.">
   <PageHead
     folio="02"
-    label="Products · Aelnir"
+    label={site.aelnirUrl ? 'Products' : 'Products · Aelnir'}
+    labelLink={site.aelnirUrl ? { text: 'Aelnir', href: site.aelnirUrl } : null}
     title="Products that solve problems"
     lede="Apps, plugins and software from Aelnir, the studio I founded in Bangladesh. Each one is shown by who it helps and the problem it solves."
-  >
-    {
-      site.aelnirUrl && (
-        <p>
-          <a class="arrow-link" href={site.aelnirUrl} target="_blank" rel="noopener">
-            <span>Visit Aelnir</span>
-            <span class="arrow" aria-hidden="true">↗</span>
-            <span class="visually-hidden"> (opens in a new tab)</span>
-          </a>
-        </p>
-      )
-    }
-  </PageHead>
+  />
 
   <div class="wrap">
     {

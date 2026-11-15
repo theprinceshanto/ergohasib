@@ -2,17 +2,33 @@
 interface Props {
   folio: string;
   label: string;
+  /** Optional external link shown after the label, e.g. "Products · Aelnir ↗". */
+  labelLink?: { text: string; href: string } | null;
   title: string;
   lede?: string;
 }
-const { folio, label, title, lede } = Astro.props;
+const { folio, label, labelLink, title, lede } = Astro.props;
 ---
 
 <header class="page-head">
   <div class="wrap grid">
     <div class="page-head__meta rise">
       <span class="folio" aria-hidden="true">{folio}</span>
-      <span class="label">{label}</span>
+      <span class="label">
+        {label}
+        {
+          labelLink && (
+            <>
+              <span aria-hidden="true"> · </span>
+              <a class="label-link" href={labelLink.href} target="_blank" rel="noopener">
+                {labelLink.text}
+                <span class="label-link__arrow" aria-hidden="true">↗</span>
+                <span class="visually-hidden"> (opens in a new tab)</span>
+              </a>
+            </>
+          )
+        }
+      </span>
     </div>
     <div class="page-head__body">
       <h1 class="rise rise-2">{title}</h1>
@@ -21,3 +37,34 @@ const { folio, label, title, lede } = Astro.props;
     </div>
   </div>
 </header>
+
+<style>
+  .label-link {
+    position: relative;
+    color: var(--accent-text);
+    text-decoration: underline;
+    text-decoration-color: currentColor;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.35em;
+    white-space: nowrap;
+    transition: color 160ms var(--ease);
+  }
+  /* Bigger tap area (44px tall) without moving the text. */
+  .label-link::after {
+    content: '';
+    position: absolute;
+    inset: -14px -6px;
+  }
+  .label-link:hover {
+    color: var(--text);
+  }
+  .label-link__arrow {
+    display: inline-block;
+    margin-left: 0.15em;
+    letter-spacing: 0;
+    transition: transform 200ms var(--ease);
+  }
+  .label-link:hover .label-link__arrow {
+    transform: translate(2px, -2px);
+  }
+</style>
