@@ -1,0 +1,43 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHead from '../../components/PageHead.astro';
+import Filters from '../../components/Filters.astro';
+import WorkIndex from '../../components/WorkIndex.astro';
+import { kinds } from '../../data/site';
+import { getWork } from '../../lib/content';
+
+const work = await getWork();
+const options = kinds.map((k) => ({
+  key: k.key,
+  label: k.label,
+  count: work.filter((p) => p.data.kind === k.key).length,
+}));
+---
+
+<Base title="Work" description="Machine learning projects with code, tests, honest evaluation and a demo you can try.">
+  <PageHead
+    folio="01"
+    label="Work"
+    title="Machine learning projects"
+    lede="The proof. Every project solves a costly problem with free public data, and ships with code, tests, an honest evaluation and a way to try it."
+  />
+
+  <div class="wrap">
+    <Filters target="work-list" label="Filter" options={options} total={work.length} noun={['project', 'projects']} />
+    <WorkIndex items={work} id="work-list" />
+    <div class="empty" data-filter-empty hidden>
+      <p>Nothing here yet.</p>
+      <p class="muted">Projects of this type are planned for later in the portfolio.</p>
+    </div>
+    <p class="note muted">
+      Research and engineering demonstrations only. Nothing here is investment, lending or legal advice.
+    </p>
+  </div>
+</Base>
+
+<style>
+  .note {
+    margin-top: var(--s6);
+    font-size: 0.875rem;
+  }
+</style>

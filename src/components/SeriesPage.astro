@@ -1,0 +1,57 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumbs from './Breadcrumbs.astro';
+import PostList from './PostList.astro';
+import { getPosts } from '../lib/content';
+
+interface Props {
+  series: 'unfiltered' | 'jemon-achi';
+  name: string;
+  nameLang?: string;
+  description: string;
+  emptyText: string;
+}
+const { series, name, nameLang, description, emptyText } = Astro.props;
+const posts = (await getPosts()).filter((p) => p.data.series === series);
+---
+
+<Base title={series === 'unfiltered' ? 'Unfiltered' : 'Jemon achi'} description={description}>
+  <header class="series-head">
+    <div class="wrap">
+      <Breadcrumbs items={[{ label: 'Writing', href: '/writing' }, { label: name }]} />
+      <p class="label label--accent">Series</p>
+      <h1 class:list={['rise', { bn: nameLang === 'bn' }]} lang={nameLang}>{name}</h1>
+      <p class="lede rise rise-2">{description}</p>
+    </div>
+  </header>
+  <div class="wrap">
+    {
+      posts.length > 0 ? (
+        <PostList posts={posts} />
+      ) : (
+        <div class="empty">
+          <p>{emptyText}</p>
+        </div>
+      )
+    }
+  </div>
+</Base>
+
+<style>
+  .series-head {
+    padding-block: var(--s5) var(--s8);
+  }
+  .series-head .label {
+    margin-top: var(--s6);
+  }
+  .series-head h1 {
+    margin-block: var(--s3) var(--s5);
+    font-size: clamp(3rem, 1.5rem + 7vw, 8rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+  .series-head h1.bn {
+    letter-spacing: 0;
+    line-height: 1.3;
+  }
+</style>

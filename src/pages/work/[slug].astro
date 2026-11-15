@@ -1,0 +1,286 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { kindLabel } from '../../data/site';
+import { getWork } from '../../lib/content';
+import { href } from '../../lib/url';
+
+export const getStaticPaths = (async () => {
+  const work = await getWork();
+  return work.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: { entry, next: work[(i + 1) % work.length] },
+  }));
+}) satisfies GetStaticPaths;
+
+const { entry, next } = Astro.props;
+const { Content, headings } = await render(entry);
+const d = entry.data;
+const sections = headings.filter((h) => h.depth === 2);
+---
+
+<Base title={`${d.code}: ${d.title}`} description={d.deck}>
+  <article class="project">
+    <header class="project__head">
+      <div class="wrap">
+        <Breadcrumbs items={[{ label: 'Work', href: '/work' }, { label: d.title }]} />
+        <div class="grid project__intro">
+          <p class="project__code rise" aria-hidden="true">{d.code}</p>
+          <div class="project__titles">
+            <p class="label label--accent rise">{kindLabel(d.kind)} · {d.code}</p>
+            <h1 class="rise rise-2">{d.title}</h1>
+            <p class="lede rise rise-3">{d.deck}</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="wrap">
+      <dl class="facts">
+        <div>
+          <dt class="label">Status</dt>
+          <dd><span class="status" data-status={d.status}>{d.status}</span></dd>
+        </div>
+        {
+          d.target && (
+            <div>
+              <dt class="label">Timing</dt>
+              <dd>{d.target}</dd>
+            </div>
+          )
+        }
+        <div>
+          <dt class="label">Data</dt>
+          <dd>{d.data}</dd>
+        </div>
+        {
+          d.stack.length > 0 && (
+            <div>
+              <dt class="label">Stack</dt>
+              <dd class="facts__tags">
+                {d.stack.map((s) => (
+                  <span class="tag">{s}</span>
+                ))}
+              </dd>
+            </div>
+          )
+        }
+        <div>
+          <dt class="label">Code and demo</dt>
+          <dd class="facts__links">
+            {d.repo ? (
+              <a class="link" href={d.repo} target="_blank" rel="noopener">
+                Repository<span class="visually-hidden"> (opens in a new tab)</span>
+              </a>
+            ) : (
+              <span class="muted">Repository when published</span>
+            )}
+            {d.demo ? (
+              <a class="link" href={d.demo} target="_blank" rel="noopener">
+                Live demo<span class="visually-hidden"> (opens in a new tab)</span>
+              </a>
+            ) : (
+              <span class="muted">Demo when deployed</span>
+            )}
+          </dd>
+        </div>
+      </dl>
+
+      <div class="grid project__body">
+        {
+          sections.length > 1 && (
+            <nav class="toc" aria-label="On this page">
+              <p class="label">On this page</p>
+              <ol>
+                {sections.map((h, i) => (
+                  <li>
+                    <a href={`#${h.slug}`}>
+                      <span class="toc__n" aria-hidden="true">
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
+                      {h.text}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          )
+        }
+        <div class="prose project__prose">
+          <Content />
+        </div>
+      </div>
+
+      {
+        next && next.id !== entry.id && (
+          <a class="next" href={href(`/work/${next.id}`)}>
+            <span class="label">Next project</span>
+            <span class="next__title">
+              <span class="next__code">{next.data.code}</span> {next.data.title}
+              <span class="next__arrow" aria-hidden="true">
+                →
+              </span>
+            </span>
+          </a>
+        )
+      }
+    </div>
+  </article>
+</Base>
+
+<style>
+  .project__head {
+    padding-block: var(--s5) var(--s8);
+  }
+  .project__intro {
+    margin-top: var(--s6);
+    row-gap: var(--s4);
+    align-items: start;
+  }
+  .project__code {
+    grid-column: 1 / span 3;
+    font-size: clamp(4rem, 2rem + 8vw, 10rem);
+    font-weight: 500;
+    line-height: 0.8;
+    letter-spacing: -0.06em;
+    color: var(--accent);
+  }
+  .project__titles {
+    grid-column: 4 / -1;
+    display: grid;
+    gap: var(--s4);
+  }
+  .project__titles h1 {
+    font-size: clamp(2.5rem, 1.4rem + 4vw, 4.75rem);
+    line-height: 1;
+  }
+
+  .facts {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    border-block: 1px solid var(--text);
+  }
+  .facts > div {
+    padding: var(--s5) var(--s5) var(--s5) 0;
+    display: grid;
+    align-content: start;
+    gap: var(--s2);
+  }
+  .facts > div + div {
+    padding-left: var(--s5);
+    border-left: 1px solid var(--rule);
+  }
+  .facts dd {
+    margin: 0;
+    color: var(--text);
+  }
+  .facts__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .facts__links {
+    display: grid;
+    gap: var(--s1);
+  }
+
+  .project__body {
+    margin-top: var(--s8);
+    row-gap: var(--s6);
+  }
+  .toc {
+    grid-column: 1 / span 3;
+    align-self: start;
+    position: sticky;
+    top: calc(var(--header-h) + var(--s5));
+    display: grid;
+    gap: var(--s3);
+  }
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--rule);
+  }
+  .toc a {
+    display: flex;
+    gap: var(--s3);
+    align-items: baseline;
+    min-height: 36px;
+    padding: 6px 0 6px var(--s4);
+    margin-left: -1px;
+    border-left: 2px solid transparent;
+    color: var(--text-2);
+    text-decoration: none;
+    font-size: 0.9375rem;
+  }
+  .toc a:hover {
+    color: var(--text);
+    border-left-color: var(--accent);
+  }
+  .toc__n {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .project__prose {
+    grid-column: 4 / span 8;
+  }
+  .project__prose :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .next {
+    display: grid;
+    gap: var(--s3);
+    margin-top: var(--s10);
+    padding-top: var(--s6);
+    border-top: 1px solid var(--text);
+    text-decoration: none;
+    color: var(--text);
+  }
+  .next__title {
+    font-size: clamp(1.75rem, 1.2rem + 2vw, 3rem);
+    font-weight: 500;
+    letter-spacing: var(--track-display);
+    line-height: 1.05;
+  }
+  .next__code {
+    color: var(--accent);
+  }
+  .next__arrow {
+    display: inline-block;
+    transition: transform 200ms var(--ease);
+  }
+  .next:hover .next__arrow {
+    transform: translateX(8px);
+  }
+
+  @media (max-width: 900px) {
+    .project__code,
+    .project__titles,
+    .toc,
+    .project__prose {
+      grid-column: 1 / -1;
+    }
+    .project__code {
+      font-size: 4rem;
+    }
+    .toc {
+      position: static;
+    }
+  }
+  @media (max-width: 560px) {
+    .facts > div,
+    .facts > div + div {
+      padding: var(--s4) 0;
+      border-left: 0;
+    }
+    .facts > div + div {
+      border-top: 1px solid var(--rule);
+    }
+  }
+</style>

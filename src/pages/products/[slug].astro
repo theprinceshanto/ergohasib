@@ -1,0 +1,151 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { productKindLabel } from '../../data/site';
+import { getProducts } from '../../lib/content';
+import { href } from '../../lib/url';
+
+export const getStaticPaths = (async () => {
+  const products = await getProducts();
+  return products.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: { entry, next: products[(i + 1) % products.length] },
+  }));
+}) satisfies GetStaticPaths;
+
+const { entry, next } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+---
+
+<Base title={d.title} description={d.tagline} noindex={d.draft}>
+  <article>
+    <header class="product-head">
+      <div class="wrap">
+        <Breadcrumbs items={[{ label: 'Products', href: '/products' }, { label: d.title }]} />
+        <p class="label label--accent product-head__label">
+          Aelnir · {productKindLabel(d.kind)}
+          {d.draft && <span class="draft-badge">Draft</span>}
+        </p>
+        <h1 class="rise">{d.title}</h1>
+        <p class="lede rise rise-2">{d.tagline}</p>
+      </div>
+    </header>
+    <div class="wrap">
+      <dl class="outcome">
+        <div>
+          <dt class="label">Who it helps</dt>
+          <dd>{d.users}</dd>
+        </div>
+        <div>
+          <dt class="label">The problem</dt>
+          <dd>{d.problem}</dd>
+        </div>
+        {
+          d.result && (
+            <div>
+              <dt class="label">What changed</dt>
+              <dd>{d.result}</dd>
+            </div>
+          )
+        }
+        <div>
+          <dt class="label">Runs on</dt>
+          <dd>{d.platform}</dd>
+        </div>
+      </dl>
+      <div class="prose product-body">
+        <Content />
+      </div>
+      {
+        d.store && (
+          <p class="store">
+            <a class="btn" href={d.store} target="_blank" rel="noopener">
+              Get {d.title}
+              <span class="visually-hidden"> (opens in a new tab)</span>
+            </a>
+          </p>
+        )
+      }
+      {
+        next && next.id !== entry.id && (
+          <a class="next" href={href(`/products/${next.id}`)}>
+            <span class="label">Next product</span>
+            <span class="next__title">
+              {next.data.title}{' '}
+              <span class="next__arrow" aria-hidden="true">
+                →
+              </span>
+            </span>
+          </a>
+        )
+      }
+    </div>
+  </article>
+</Base>
+
+<style>
+  .product-head {
+    padding-block: var(--s5) var(--s7);
+  }
+  .product-head__label {
+    margin-top: var(--s6);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s3);
+  }
+  .product-head h1 {
+    margin-block: var(--s3) var(--s4);
+    font-size: clamp(2.75rem, 1.5rem + 5vw, 5.5rem);
+  }
+  .outcome {
+    margin: 0 0 var(--s7);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--s5);
+    padding-block: var(--s5);
+    border-block: 1px solid var(--text);
+  }
+  .outcome div {
+    display: grid;
+    align-content: start;
+    gap: var(--s2);
+  }
+  .outcome dd {
+    margin: 0;
+    font-size: 1.0625rem;
+    color: var(--text);
+  }
+  .product-body :global(h2:first-child) {
+    margin-top: 0;
+  }
+  .store {
+    margin-top: var(--s7);
+  }
+  .next {
+    display: grid;
+    gap: var(--s3);
+    margin-top: var(--s10);
+    padding-top: var(--s6);
+    border-top: 1px solid var(--text);
+    text-decoration: none;
+    color: var(--text);
+  }
+  .next__title {
+    font-size: clamp(1.75rem, 1.2rem + 2vw, 3rem);
+    font-weight: 500;
+    letter-spacing: var(--track-display);
+    line-height: 1.05;
+  }
+  .next__arrow {
+    display: inline-block;
+    color: var(--accent);
+    transition: transform 200ms var(--ease);
+  }
+  .next:hover .next__arrow {
+    transform: translateX(8px);
+  }
+</style>

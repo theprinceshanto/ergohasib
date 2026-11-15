@@ -1,0 +1,193 @@
+---
+import Mark from './Mark.astro';
+import { site, missingSettings } from '../data/site';
+import { href } from '../lib/url';
+
+const social = [
+  { label: 'GitHub', url: site.github },
+  { label: 'LinkedIn', url: site.linkedin },
+  { label: 'Facebook', url: site.facebook },
+].filter((s): s is { label: string; url: string } => Boolean(s.url));
+
+const year = new Date().getFullYear();
+const showSetup = import.meta.env.DEV && missingSettings.length > 0;
+---
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="site-footer__top">
+      <div class="site-footer__sign">
+        <p class="site-footer__word">
+          <Mark size={80} />
+          <span>hasib</span>
+        </p>
+        <p class="label site-footer__tagline">
+          <span class="nowrap">Builds models.</span> <span class="nowrap">Ships products.</span>
+          <span class="nowrap label--accent">Asks why.</span>
+        </p>
+      </div>
+
+      <ul class="site-footer__links" aria-label="Elsewhere">
+        {
+          social.map((s) => (
+            <li>
+              <a class="link" href={s.url} rel="me noopener" target="_blank">
+                {s.label}
+                <span class="visually-hidden"> (opens in a new tab)</span>
+              </a>
+            </li>
+          ))
+        }
+        <li><a class="link" href={href('/about/cv')}>CV</a></li>
+        <li><a class="link" href={href('/contact')}>Contact</a></li>
+      </ul>
+    </div>
+
+    <div class="site-footer__base">
+      <p class="muted">© {year} Hasib. Projects use free public data and are research demonstrations only.</p>
+      <button class="theme-btn" type="button" data-theme-toggle aria-live="polite">
+        <span class="muted">Theme:</span> <span data-theme-label>System</span>
+      </button>
+    </div>
+
+    {
+      showSetup && (
+        <p class="setup-note" role="note">
+          <strong>Dev only.</strong> Still to fill in <code>src/data/site.ts</code>: {missingSettings.join(', ')}. This note
+          never appears in the built site.
+        </p>
+      )
+    }
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--s10);
+    border-top: 1px solid var(--text);
+    padding-block: var(--s8) var(--s6);
+  }
+  .site-footer__top {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: var(--s6);
+    padding-bottom: var(--s7);
+  }
+  .site-footer__sign {
+    display: grid;
+    gap: var(--s3);
+  }
+  /* Horizontal lockup (brand/lockup-horizontal.png): mark as tall as the wordmark's ascenders,
+     dots sitting on the baseline, gap about 0.7 of the mark's width. Sized in em so it scales with the type. */
+  .site-footer__word {
+    display: flex;
+    align-items: baseline;
+    font-size: clamp(3rem, 2rem + 2.5vw, 4rem);
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 0.85;
+  }
+  /* The mark's drawing fills 15-85% of its box across and 13-79% down. With baseline alignment
+     the box's bottom edge sits on the baseline, so shift down by 21% of the box to put the dots on it. */
+  .site-footer__word :global(.mark) {
+    flex: none;
+    width: 1.2em;
+    height: 1.2em;
+    margin-left: -0.18em;
+    margin-right: 0.2em; /* gap about 0.45 of the mark width; tighter than the brand file, by choice */
+    transform: translateY(0.252em);
+  }
+  .site-footer__tagline {
+    letter-spacing: 0.16em;
+  }
+  .site-footer__tagline .nowrap {
+    white-space: nowrap;
+  }
+  /* "Asks why." always starts the second line. */
+  .site-footer__tagline .label--accent {
+    display: block;
+  }
+  .site-footer__links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2) var(--s5);
+  }
+  .site-footer__links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+  .site-footer__base {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--s4);
+    padding-top: var(--s4);
+    border-top: 1px solid var(--rule);
+    font-size: 0.875rem;
+  }
+  .theme-btn {
+    min-height: 44px;
+    padding: 0 var(--s3);
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+  .theme-btn:hover {
+    border-color: var(--text);
+  }
+  .setup-note {
+    margin-top: var(--s5);
+    padding: var(--s3) var(--s4);
+    border: 1px dashed var(--accent);
+    font-size: 0.875rem;
+    color: var(--text-2);
+  }
+</style>
+
+<script>
+  type Mode = 'system' | 'light' | 'dark';
+  const order: Mode[] = ['system', 'light', 'dark'];
+  const names: Record<Mode, string> = { system: 'System', light: 'Light', dark: 'Dark' };
+
+  function read(): Mode {
+    try {
+      const v = localStorage.getItem('theme');
+      return v === 'light' || v === 'dark' ? v : 'system';
+    } catch {
+      return 'system';
+    }
+  }
+  function apply(mode: Mode) {
+    const root = document.documentElement;
+    if (mode === 'system') root.removeAttribute('data-theme');
+    else root.setAttribute('data-theme', mode);
+    try {
+      if (mode === 'system') localStorage.removeItem('theme');
+      else localStorage.setItem('theme', mode);
+    } catch {
+      /* storage blocked: theme still applies for this page */
+    }
+    const label = document.querySelector('[data-theme-label]');
+    if (label) label.textContent = names[mode];
+  }
+
+  const btn = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+  if (btn) {
+    let mode = read();
+    apply(mode);
+    btn.addEventListener('click', () => {
+      mode = order[(order.indexOf(mode) + 1) % order.length];
+      apply(mode);
+    });
+  }
+</script>

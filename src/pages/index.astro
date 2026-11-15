@@ -1,0 +1,291 @@
+---
+import Base from '../layouts/Base.astro';
+import Mark from '../components/Mark.astro';
+import WorkIndex from '../components/WorkIndex.astro';
+import PostList from '../components/PostList.astro';
+import ProductCards from '../components/ProductCards.astro';
+import { site, arms } from '../data/site';
+import { getWork, getPosts, getProducts } from '../lib/content';
+import { href } from '../lib/url';
+
+const work = await getWork();
+const featured = work.filter((p) => p.data.featured).slice(0, 3);
+const posts = (await getPosts()).slice(0, 2);
+const featuredProducts = (await getProducts()).filter((p) => p.data.featured).slice(0, 3);
+
+// Split the hero line so its last two words get the red-pencil underline.
+const words = site.heroLine.replace(/\.$/, '').split(' ');
+const heroStart = words.slice(0, -2).join(' ');
+const heroEnd = words.slice(-2).join(' ');
+---
+
+<Base>
+  <section class="hero" aria-labelledby="hero-title">
+    <Mark size={560} class="hero__ghost" />
+    <div class="wrap grid hero__grid">
+      <div class="hero__meta rise">
+        <p class="label">Hasib</p>
+        <p class="label hero__tagline">
+          <span class="nowrap">Builds models.</span> <span class="nowrap">Ships products.</span>
+          <span class="nowrap label--accent">Asks why.</span>
+        </p>
+      </div>
+      <div class="hero__body">
+        <h1 id="hero-title" class="hero__title rise rise-2">
+          {heroStart} <span class="pencil">{heroEnd}</span>.
+        </h1>
+        <p class="lede rise rise-3">
+          I build models that hold up outside a notebook: tested, evaluated honestly and deployed. Background in
+          mathematics and software quality engineering.
+        </p>
+        <div class="hero__actions rise rise-3">
+          <a class="btn" href={href('/work')}>See the work</a>
+          <a class="btn btn--ghost" href={href('/about')}>About me</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="arms" aria-labelledby="arms-title">
+    <div class="wrap">
+      <h2 id="arms-title" class="visually-hidden">Three arms</h2>
+      <ol class="arms__list">
+        {
+          arms.map((arm, i) => (
+            <li class="arm">
+              <span class="arm__num" aria-hidden="true">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <h3 class="arm__name">{arm.label}</h3>
+              <p class="arm__line">{arm.line}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section home-block" aria-labelledby="work-title">
+    <div class="wrap grid">
+      <div class="home-block__meta">
+        <p class="label label--accent">Selected work</p>
+        <h2 id="work-title" class="home-block__title">The proof</h2>
+        <p class="muted">Each project ships with code, tests, an honest evaluation and a demo.</p>
+        <a class="arrow-link" href={href('/work')}><span>All projects</span><span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="home-block__body">
+        <WorkIndex items={featured} headingLevel="h3" />
+      </div>
+    </div>
+  </section>
+
+  {
+    featuredProducts.length > 0 && (
+      <section class="section home-block" aria-labelledby="products-title">
+        <div class="wrap grid">
+          <div class="home-block__meta">
+            <p class="label label--accent">Selected products</p>
+            <h2 id="products-title" class="home-block__title">Shipped</h2>
+            <p class="muted">Made through Aelnir, the studio I founded. Each solves one problem for one group of people.</p>
+            <a class="arrow-link" href={href('/products')}>
+              <span>All products</span>
+              <span class="arrow" aria-hidden="true">→</span>
+            </a>
+          </div>
+          <div class="home-block__body">
+            <ProductCards items={featuredProducts} headingLevel="h3" compact />
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section home-block" aria-labelledby="writing-title">
+    <div class="wrap grid">
+      <div class="home-block__meta">
+        <p class="label label--accent">Latest writing</p>
+        <h2 id="writing-title" class="home-block__title">Notes and essays</h2>
+        <a class="arrow-link" href={href('/writing')}><span>All writing</span><span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+      <div class="home-block__body">
+        {
+          posts.length > 0 ? (
+            <PostList posts={posts} headingLevel="h3" />
+          ) : (
+            <div class="empty">
+              <p>The first posts are on their way.</p>
+              <p class="muted">Technical notes on the projects, and essays in Unfiltered and যেমন আছি.</p>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(3.5rem, 8vw, 7.5rem) clamp(3rem, 7vw, 6rem);
+  }
+  .hero :global(.hero__ghost) {
+    position: absolute;
+    right: -120px;
+    top: 50%;
+    width: min(560px, 70vw);
+    height: auto;
+    transform: translateY(-50%);
+    color: var(--ghost);
+    z-index: 0;
+    pointer-events: none;
+  }
+  .hero :global(.hero__ghost circle:first-child) {
+    stroke: var(--ghost);
+  }
+  .hero__grid {
+    position: relative;
+    z-index: 1;
+    row-gap: var(--s6);
+  }
+  .hero__meta {
+    grid-column: 1 / span 3;
+    display: grid;
+    align-content: start;
+    gap: var(--s1);
+    padding-top: 1rem;
+    border-top: 2px solid var(--accent);
+    align-self: start;
+  }
+  /* Slightly tighter tracking so the phrase reads as one line and a half. Breaks only between sentences. */
+  .hero__tagline {
+    letter-spacing: 0.16em;
+  }
+  .hero__tagline .nowrap {
+    white-space: nowrap;
+  }
+  /* "Asks why." always starts the second line. */
+  .hero__tagline .label--accent {
+    display: block;
+  }
+  .hero__body {
+    grid-column: 4 / -1;
+    display: grid;
+    gap: var(--s6);
+  }
+  .hero__title {
+    font-size: clamp(2.75rem, 1rem + 7vw, 7rem);
+    line-height: 0.95;
+    letter-spacing: -0.035em;
+    max-width: 11em;
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s3);
+  }
+
+  .arms {
+    border-block: 1px solid var(--text);
+  }
+  .arms__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .arm {
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+    gap: var(--s2);
+    padding: var(--s6) var(--s5) var(--s6) 0;
+  }
+  .arm + .arm {
+    padding-left: var(--s5);
+    border-left: 1px solid var(--rule);
+  }
+  .arm__num {
+    font-size: 0.8125rem;
+    color: var(--accent-text);
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.12em;
+  }
+  .arm__name {
+    font-size: 1.75rem;
+  }
+  .arm__line {
+    color: var(--text-2);
+    max-width: 24em;
+  }
+
+  .home-block .grid {
+    row-gap: var(--s6);
+  }
+  .home-block__meta {
+    grid-column: 1 / span 4;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--s3);
+    align-self: start;
+    position: sticky;
+    top: calc(var(--header-h) + var(--s5));
+  }
+  .home-block__title {
+    font-size: clamp(2rem, 1.4rem + 2vw, 3rem);
+  }
+  .home-block__meta .muted {
+    max-width: 22em;
+  }
+  .home-block__body {
+    grid-column: 5 / -1;
+  }
+
+  /* Below this width the side column is too narrow for the tagline, so it sits above the headline. */
+  @media (max-width: 1239px) {
+    .hero__meta,
+    .hero__body {
+      grid-column: 1 / -1;
+    }
+    .hero__meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--s1) var(--s4);
+    }
+    .hero__tagline {
+      flex-basis: 100%;
+    }
+  }
+  @media (max-width: 900px) {
+    .hero__meta,
+    .hero__body,
+    .home-block__meta,
+    .home-block__body {
+      grid-column: 1 / -1;
+    }
+    .hero__meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--s1) var(--s4);
+    }
+    .hero__tagline {
+      flex-basis: 100%;
+    }
+    .home-block__meta {
+      position: static;
+    }
+    .arms__list {
+      grid-template-columns: 1fr;
+    }
+    .arm,
+    .arm + .arm {
+      padding: var(--s5) 0;
+      border-left: 0;
+    }
+    .arm + .arm {
+      border-top: 1px solid var(--rule);
+    }
+  }
+</style>

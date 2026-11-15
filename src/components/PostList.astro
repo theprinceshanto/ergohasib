@@ -1,0 +1,92 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { armLabel } from '../data/site';
+import { href, formatDate } from '../lib/url';
+
+interface Props {
+  posts: CollectionEntry<'writing'>[];
+  id?: string;
+  headingLevel?: 'h2' | 'h3';
+  compact?: boolean;
+}
+const { posts, id, headingLevel = 'h2', compact = false } = Astro.props;
+const H = headingLevel;
+const seriesName = { unfiltered: 'Unfiltered', 'jemon-achi': 'যেমন আছি' } as const;
+---
+
+<ol class:list={['posts', { 'posts--compact': compact }]} id={id}>
+  {
+    posts.map((post) => (
+      <li class="post" data-key={post.data.arm} lang={post.data.lang === 'bn' ? 'bn' : undefined}>
+        <a class="post__link" href={href(`/writing/${post.id}`)}>
+          <span class="post__meta">
+            <time datetime={post.data.date.toISOString().slice(0, 10)}>{formatDate(post.data.date)}</time>
+            <span class="post__arm">{armLabel(post.data.arm)}</span>
+            {post.data.series && (
+              <span class:list={['post__series', { bn: post.data.series === 'jemon-achi' }]}>
+                {seriesName[post.data.series]}
+              </span>
+            )}
+            {post.data.draft && <span class="draft-badge">Draft</span>}
+          </span>
+          <H class:list={['post__title', { bn: post.data.lang === 'bn' }]}>{post.data.title}</H>
+          <span class="post__desc">{post.data.description}</span>
+        </a>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .posts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--text);
+  }
+  .post {
+    border-bottom: 1px solid var(--rule);
+  }
+  .post__link {
+    display: grid;
+    gap: var(--s2);
+    padding: var(--s5) 0;
+    text-decoration: none;
+    color: var(--text);
+  }
+  .post__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s2) var(--s4);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+  .post__arm {
+    color: var(--accent-text);
+    font-weight: 500;
+  }
+  .post__title {
+    font-size: clamp(1.375rem, 1.1rem + 0.9vw, 1.875rem);
+    line-height: 1.15;
+    max-width: 30em;
+    transition: color 160ms var(--ease);
+  }
+  .post__link:hover .post__title {
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.18em;
+  }
+  .post__desc {
+    color: var(--text-2);
+    max-width: 40em;
+    text-wrap: pretty;
+  }
+  .posts--compact {
+    border-top-color: var(--rule);
+  }
+  .posts--compact .post__title {
+    font-size: 1.375rem;
+  }
+</style>

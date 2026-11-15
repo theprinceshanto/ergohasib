@@ -1,0 +1,146 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import { site } from '../data/site';
+
+const channels = [
+  site.github && { label: 'GitHub', url: site.github, note: 'Code for every project' },
+  site.linkedin && { label: 'LinkedIn', url: site.linkedin, note: 'Weekly posts and updates' },
+  site.facebook && { label: 'Facebook', url: site.facebook, note: 'Writing and personal news' },
+].filter((c): c is { label: string; url: string; note: string } => Boolean(c));
+---
+
+<Base title="Contact" description="How to reach Hasib: email, LinkedIn and GitHub.">
+  <PageHead
+    folio="05"
+    label="Contact"
+    title="Say hello."
+    lede="For roles, projects or a question about something I wrote. Email is best; I reply within a few days."
+  />
+
+  <div class="wrap">
+    <div class="contact">
+      {
+        site.email ? (
+          <div class="contact__email">
+            <p class="label">Email</p>
+            <p class="contact__address">
+              <a href={`mailto:${site.email}`}>{site.email}</a>
+            </p>
+            <button class="btn btn--ghost" type="button" data-copy={site.email}>
+              <span data-copy-label>Copy address</span>
+            </button>
+          </div>
+        ) : (
+          <div class="empty">
+            <p>Email address coming soon.</p>
+            <p class="muted">Until then, the links below reach me.</p>
+          </div>
+        )
+      }
+
+      {
+        channels.length > 0 && (
+          <ul class="channels">
+            {channels.map((c) => (
+              <li>
+                <a class="channel" href={c.url} target="_blank" rel="me noopener">
+                  <span class="channel__name">{c.label}</span>
+                  <span class="channel__note">{c.note}</span>
+                  <span class="channel__arrow" aria-hidden="true">
+                    ↗
+                  </span>
+                  <span class="visually-hidden"> (opens in a new tab)</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+  </div>
+</Base>
+
+<style>
+  .contact {
+    display: grid;
+    gap: var(--s8);
+    border-top: 1px solid var(--text);
+    padding-top: var(--s7);
+  }
+  .contact__email {
+    display: grid;
+    justify-items: start;
+    gap: var(--s4);
+  }
+  .contact__address {
+    font-size: clamp(1.75rem, 1rem + 3.5vw, 4rem);
+    font-weight: 500;
+    letter-spacing: var(--track-display);
+    line-height: 1.1;
+    overflow-wrap: anywhere;
+  }
+  .contact__address a {
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 0.06em;
+    text-underline-offset: 0.15em;
+  }
+  .channels {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--rule);
+  }
+  .channel {
+    display: grid;
+    grid-template-columns: 12rem minmax(0, 1fr) auto;
+    gap: var(--s4);
+    align-items: baseline;
+    min-height: 64px;
+    padding: var(--s4) 0;
+    border-bottom: 1px solid var(--rule);
+    color: var(--text);
+    text-decoration: none;
+  }
+  .channel__name {
+    font-size: 1.5rem;
+    font-weight: 500;
+  }
+  .channel__note {
+    color: var(--text-2);
+  }
+  .channel__arrow {
+    transition: transform 200ms var(--ease);
+  }
+  .channel:hover .channel__arrow {
+    transform: translate(3px, -3px);
+    color: var(--accent);
+  }
+  @media (max-width: 600px) {
+    .channel {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .channel__note {
+      grid-column: 1;
+      grid-row: 2;
+    }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
+    const label = btn.querySelector('[data-copy-label]');
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(btn.dataset.copy ?? '');
+        if (label) label.textContent = 'Copied';
+      } catch {
+        if (label) label.textContent = 'Copy failed: select the address above';
+      }
+      setTimeout(() => {
+        if (label) label.textContent = 'Copy address';
+      }, 2500);
+    });
+  });
+</script>

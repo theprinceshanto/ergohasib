@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<title>hasib link preview</title>
+<style>
+  @font-face { font-family: 'Jost'; src: url('../src/assets/fonts/Jost-Regular.ttf'); font-weight: 400; }
+  @font-face { font-family: 'Jost'; src: url('../src/assets/fonts/Jost-Medium.ttf'); font-weight: 500; }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: #e9e7e1; }
+  #card {
+    position: relative; overflow: hidden;
+    width: 1200px; height: 630px; padding: 72px 80px;
+    background: #FAFAF7; color: #121418; font-family: 'Jost', sans-serif;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .ghost { position: absolute; right: -90px; top: 50%; transform: translateY(-50%); width: 520px; height: 520px; }
+  .ghost circle { stroke: #ECEAE4; }
+  .ghost circle:not(:first-child) { fill: #ECEAE4; }
+  .lockup { position: relative; display: flex; align-items: baseline; font-size: 56px; font-weight: 500; letter-spacing: -0.04em; line-height: 0.85; }
+  .lockup svg { width: 1.2em; height: 1.2em; margin-left: -0.18em; margin-right: 0.2em; transform: translateY(0.252em); flex: none; }
+  h1 { position: relative; font-size: 76px; font-weight: 500; letter-spacing: -0.035em; line-height: 0.98; max-width: 900px; }
+  .pencil { text-decoration: underline; text-decoration-color: #D2462E; text-decoration-thickness: 0.08em; text-underline-offset: 0.14em; text-decoration-skip-ink: none; }
+  .foot { position: relative; display: flex; justify-content: space-between; align-items: flex-end; border-top: 2px solid #D2462E; padding-top: 22px; }
+  .label { font-size: 20px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: #6B6B66; line-height: 1.45; }
+  .label .accent { color: #B83A24; }
+  .url { font-size: 24px; color: #4A4A45; }
+</style>
+</head>
+<body>
+  <div id="card">
+    <svg class="ghost" viewBox="0 0 100 100" aria-hidden="true">
+      <circle cx="50" cy="26" r="9.5" fill="none" stroke-width="7"></circle>
+      <circle cx="28" cy="66" r="13"></circle>
+      <circle cx="72" cy="66" r="13"></circle>
+    </svg>
+    <div class="lockup">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="26" r="9.5" fill="none" stroke="#D2462E" stroke-width="7"></circle>
+        <circle cx="28" cy="66" r="13" fill="#121418"></circle>
+        <circle cx="72" cy="66" r="13" fill="#121418"></circle>
+      </svg>
+      <span>hasib</span>
+    </div>
+    <h1>Machine learning systems, from data to <span class="pencil">deployment</span>.</h1>
+    <div class="foot">
+      <p class="label">Builds models. Ships products.<br><span class="accent">Asks why.</span></p>
+      <p class="url">ergohasib.com</p>
+    </div>
+  </div>
+</body>
+</html>

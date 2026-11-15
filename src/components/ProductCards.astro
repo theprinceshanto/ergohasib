@@ -1,0 +1,119 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { productKindLabel } from '../data/site';
+import { href } from '../lib/url';
+
+interface Props {
+  items: CollectionEntry<'products'>[];
+  id?: string;
+  headingLevel?: 'h2' | 'h3';
+  compact?: boolean;
+}
+const { items, id, headingLevel = 'h2', compact = false } = Astro.props;
+const H = headingLevel;
+---
+
+<ul class:list={['products', { 'products--compact': compact }]} id={id}>
+  {
+    items.map((p) => (
+      <li class="product" data-key={p.data.kind}>
+        <a class="product__link" href={href(`/products/${p.id}`)}>
+          <span class="product__meta">
+            <span class="product__kind">{productKindLabel(p.data.kind)}</span>
+            <span class="product__platform">{p.data.platform}</span>
+            {p.data.draft && <span class="draft-badge">Draft</span>}
+          </span>
+          <H class="product__title">{p.data.title}</H>
+          <span class="product__tagline">{p.data.tagline}</span>
+          {!compact && (
+            <span class="product__for">
+              <span class="label">For</span>
+              <span>{p.data.users}</span>
+            </span>
+          )}
+          <span class="product__more" aria-hidden="true">
+            See the product <span class="product__arrow">→</span>
+          </span>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .products {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+    gap: var(--s5);
+  }
+  .product__link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s3);
+    height: 100%;
+    padding: var(--s6);
+    border-top: 3px solid var(--text);
+    background: var(--surface);
+    color: var(--text);
+    text-decoration: none;
+    transition: border-color 200ms var(--ease);
+  }
+  .product__link:hover {
+    border-top-color: var(--accent);
+  }
+  .product__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s1) var(--s3);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+  .product__kind {
+    color: var(--accent-text);
+    font-weight: 500;
+  }
+  .product__title {
+    font-size: clamp(1.625rem, 1.3rem + 1vw, 2.125rem);
+    line-height: 1.1;
+  }
+  .product__tagline {
+    color: var(--text-2);
+    text-wrap: pretty;
+  }
+  .product__for {
+    display: grid;
+    gap: var(--s1);
+    padding-top: var(--s3);
+    border-top: 1px solid var(--border);
+    font-size: 0.9375rem;
+  }
+  .product__more {
+    margin-top: auto;
+    padding-top: var(--s3);
+    font-size: 0.9375rem;
+    font-weight: 500;
+  }
+  .product__arrow {
+    display: inline-block;
+    transition: transform 200ms var(--ease);
+  }
+  .product__link:hover .product__arrow {
+    transform: translateX(4px);
+    color: var(--accent);
+  }
+  .products--compact {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+  }
+  .products--compact .product__link {
+    padding: var(--s5);
+  }
+  @media (max-width: 400px) {
+    .product__link {
+      padding: var(--s5);
+    }
+  }
+</style>

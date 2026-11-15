@@ -1,0 +1,86 @@
+---
+/**
+ * Filter chips for a list. Items in the target list carry data-key="a b".
+ * Without JavaScript the chips stay hidden and every item shows.
+ * The choice is kept in the URL (?filter=models) so it can be shared.
+ */
+interface Props {
+  target: string; // id of the list element
+  label: string;
+  options: { key: string; label: string; count: number }[];
+  total: number;
+  noun: [string, string]; // singular, plural
+}
+const { target, label, options, total, noun } = Astro.props;
+---
+
+<div class="filters" data-filters={target} data-noun={noun.join('|')} hidden>
+  <span class="label filters__label" id={`${target}-label`}>{label}</span>
+  <div role="group" aria-labelledby={`${target}-label`} class="filters__chips">
+    <button type="button" class="chip" data-filter="all" aria-pressed="true">
+      All<span class="count">{total}</span>
+    </button>
+    {
+      options.map((o) => (
+        <button type="button" class="chip" data-filter={o.key} aria-pressed="false" disabled={o.count === 0}>
+          {o.label}
+          <span class="count">{o.count}</span>
+        </button>
+      ))
+    }
+  </div>
+  <p class="filters__result muted" aria-live="polite" data-filter-result></p>
+</div>
+
+<style>
+  .filters__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s2);
+  }
+  .chip:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .chip:disabled:hover {
+    border-color: transparent;
+    color: var(--text-2);
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-filters]').forEach((bar) => {
+    const list = document.getElementById(bar.dataset.filters ?? '');
+    if (!list) return;
+    const [one, many] = (bar.dataset.noun ?? 'item|items').split('|');
+    const chips = Array.from(bar.querySelectorAll<HTMLButtonElement>('[data-filter]'));
+    const items = Array.from(list.querySelectorAll<HTMLElement>('[data-key]'));
+    const result = bar.querySelector<HTMLElement>('[data-filter-result]');
+    const empty = list.parentElement?.querySelector<HTMLElement>('[data-filter-empty]');
+    const valid = new Set(chips.filter((c) => !c.disabled).map((c) => c.dataset.filter));
+
+    const apply = (key: string, updateUrl: boolean) => {
+      if (!valid.has(key)) key = 'all';
+      let shown = 0;
+      items.forEach((item) => {
+        const keys = (item.dataset.key ?? '').split(' ');
+        const match = key === 'all' || keys.includes(key);
+        item.hidden = !match;
+        if (match) shown++;
+      });
+      chips.forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.filter === key)));
+      if (result) result.textContent = `Showing ${shown} ${shown === 1 ? one : many}`;
+      if (empty) empty.hidden = shown !== 0;
+      if (updateUrl) {
+        const url = new URL(window.location.href);
+        if (key === 'all') url.searchParams.delete('filter');
+        else url.searchParams.set('filter', key);
+        history.replaceState(null, '', url);
+      }
+    };
+
+    chips.forEach((c) => c.addEventListener('click', () => apply(c.dataset.filter ?? 'all', true)));
+    bar.hidden = false;
+    apply(new URL(window.location.href).searchParams.get('filter') ?? 'all', false);
+  });
+</script>

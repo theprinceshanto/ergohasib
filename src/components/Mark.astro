@@ -1,0 +1,24 @@
+---
+// The hasib mark (∴): vermilion apex ring over two ink dots. Ink dots follow the text colour.
+interface Props {
+  size?: number;
+  class?: string;
+  decorative?: boolean;
+}
+const { size = 28, class: className, decorative = true } = Astro.props;
+---
+
+<svg
+  class:list={['mark', className]}
+  viewBox="0 0 100 100"
+  width={size}
+  height={size}
+  aria-hidden={decorative ? 'true' : undefined}
+  role={decorative ? undefined : 'img'}
+  aria-label={decorative ? undefined : 'hasib mark'}
+  focusable="false"
+>
+  <circle cx="50" cy="26" r="9.5" fill="none" stroke="var(--accent, #D2462E)" stroke-width="7"></circle>
+  <circle cx="28" cy="66" r="13" fill="currentColor"></circle>
+  <circle cx="72" cy="66" r="13" fill="currentColor"></circle>
+</svg>

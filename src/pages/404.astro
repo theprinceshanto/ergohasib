@@ -1,0 +1,40 @@
+---
+import Base from '../layouts/Base.astro';
+import { href } from '../lib/url';
+---
+
+<Base title="Page not found" noindex>
+  <section class="nf">
+    <div class="wrap">
+      <p class="nf__code" aria-hidden="true">404</p>
+      <h1>This page does not exist.</h1>
+      <p class="lede">It may have moved. These two will get you back on track.</p>
+      <div class="nf__links">
+        <a class="btn" href={href('/work')}>Work</a>
+        <a class="btn btn--ghost" href={href('/writing')}>Writing</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    padding-block: var(--s10);
+  }
+  .nf__code {
+    font-size: clamp(6rem, 3rem + 14vw, 14rem);
+    font-weight: 500;
+    line-height: 0.8;
+    letter-spacing: -0.06em;
+    color: var(--accent);
+  }
+  .nf h1 {
+    margin-block: var(--s6) var(--s4);
+    font-size: clamp(2rem, 1.4rem + 2.5vw, 3.5rem);
+  }
+  .nf__links {
+    margin-top: var(--s6);
+    display: flex;
+    gap: var(--s3);
+  }
+</style>

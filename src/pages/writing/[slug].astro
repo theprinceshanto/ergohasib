@@ -1,0 +1,112 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import { armLabel } from '../../data/site';
+import { getPosts } from '../../lib/content';
+import { href, formatDate } from '../../lib/url';
+
+export const getStaticPaths = (async () => {
+  const posts = await getPosts();
+  return posts.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}) satisfies GetStaticPaths;
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+const series = d.series
+  ? d.series === 'unfiltered'
+    ? { name: 'Unfiltered', href: '/writing/unfiltered', bn: false }
+    : { name: 'যেমন আছি', href: '/writing/jemon-achi', bn: true }
+  : null;
+const isBn = d.lang === 'bn';
+---
+
+<Base title={d.title} description={d.description} lang={isBn ? 'bn' : 'en-GB'} noindex={d.draft}>
+  <article class="post-page">
+    <header class="post-head">
+      <div class="wrap">
+        <Breadcrumbs items={[{ label: 'Writing', href: '/writing' }, { label: d.title }]} />
+        <div class="post-head__inner">
+          <p class="post-head__meta">
+            <span class="label label--accent">{armLabel(d.arm)}</span>
+            {
+              series && (
+                <a class:list={['label', 'post-head__series', { bn: series.bn }]} href={href(series.href)}>
+                  {series.name}
+                </a>
+              )
+            }
+            {d.draft && <span class="draft-badge">Draft, not published</span>}
+          </p>
+          <h1 class:list={['rise', { bn: isBn }]}>{d.title}</h1>
+          <p class="lede rise rise-2">{d.description}</p>
+          <p class="muted">
+            <time datetime={d.date.toISOString().slice(0, 10)}>{formatDate(d.date)}</time>
+          </p>
+        </div>
+      </div>
+    </header>
+    <div class="wrap">
+      <div class:list={['prose', 'post-body', { bn: isBn }]}>
+        <Content />
+      </div>
+      <a class="arrow-link back" href={href('/writing')}>
+        <span class="arrow" aria-hidden="true">←</span><span>All writing</span>
+      </a>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .post-head {
+    padding-block: var(--s5) var(--s7);
+  }
+  .post-head__inner {
+    display: grid;
+    gap: var(--s4);
+    max-width: 52rem;
+    margin-top: var(--s6);
+  }
+  .post-head__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s2) var(--s4);
+  }
+  .post-head__series {
+    text-decoration: underline;
+    text-decoration-color: var(--border);
+    text-underline-offset: 0.3em;
+  }
+  .post-head__series.bn {
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 0.9375rem;
+  }
+  .post-head h1 {
+    font-size: clamp(2.25rem, 1.3rem + 3.6vw, 4.25rem);
+    line-height: 1.02;
+  }
+  .post-head h1.bn {
+    letter-spacing: 0;
+    line-height: 1.3;
+  }
+  .post-body {
+    padding-top: var(--s6);
+    border-top: 1px solid var(--text);
+    max-width: 36em;
+  }
+  .post-body > :global(p:first-child) {
+    font-size: 1.375rem;
+    line-height: 1.5;
+    color: var(--text);
+  }
+  .post-body.bn {
+    line-height: 1.85;
+  }
+  .back {
+    margin-top: var(--s8);
+  }
+</style>

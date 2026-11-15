@@ -1,0 +1,72 @@
+---
+import { href } from '../lib/url';
+
+interface Props {
+  items: { label: string; href?: string }[];
+}
+const { items } = Astro.props;
+---
+
+<nav class="crumbs" aria-label="Breadcrumb">
+  <ol>
+    <li><a href={href('/')}>Home</a></li>
+    {
+      items.map((item) => (
+        <li>
+          {item.href ? (
+            <a href={href(item.href)}>{item.label}</a>
+          ) : (
+            <span aria-current="page">{item.label}</span>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</nav>
+
+<style>
+  .crumbs ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+  }
+  .crumbs li {
+    display: inline-flex;
+    align-items: center;
+  }
+  .crumbs li + li::before {
+    content: '/';
+    margin: 0 var(--s2);
+    color: var(--border);
+  }
+  .crumbs a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--text-2);
+    text-decoration: underline;
+    text-decoration-color: var(--border);
+    text-underline-offset: 0.2em;
+  }
+  .crumbs a:hover {
+    text-decoration-color: var(--accent);
+  }
+  .crumbs [aria-current] {
+    color: var(--text);
+    max-width: 40ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* On phones the page title is right below, so keep the trail to one line. */
+  @media (max-width: 600px) {
+    .crumbs li:last-child:not(:first-child) {
+      display: none;
+    }
+  }
+</style>

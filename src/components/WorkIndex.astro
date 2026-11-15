@@ -1,0 +1,173 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { kindLabel } from '../data/site';
+import { href } from '../lib/url';
+
+interface Props {
+  items: CollectionEntry<'work'>[];
+  id?: string;
+  headingLevel?: 'h2' | 'h3';
+}
+const { items, id, headingLevel = 'h2' } = Astro.props;
+const H = headingLevel;
+---
+
+<ol class="work-index" id={id}>
+  {
+    items.map((p) => (
+      <li class="work-row" data-key={p.data.kind}>
+        <a class="work-row__link" href={href(`/work/${p.id}`)}>
+          <span class="work-row__code" aria-hidden="true">
+            {p.data.code}
+          </span>
+          <span class="work-row__main">
+            <H class="work-row__title">
+              <span class="visually-hidden">{p.data.code}: </span>
+              {p.data.title}
+            </H>
+            <span class="work-row__deck">{p.data.deck}</span>
+          </span>
+          <span class="work-row__meta">
+            <span class="status" data-status={p.data.status}>
+              {p.data.status}
+            </span>
+            <span class="work-row__kind">{kindLabel(p.data.kind)}</span>
+            <span class="work-row__data">{p.data.data}</span>
+          </span>
+          <span class="work-row__arrow" aria-hidden="true">
+            →
+          </span>
+        </a>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .work-index {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--text);
+  }
+  .work-row {
+    border-bottom: 1px solid var(--rule);
+  }
+  .work-row__link {
+    position: relative;
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr) 15rem 2rem;
+    gap: var(--s5);
+    align-items: start;
+    padding: var(--s6) 0;
+    text-decoration: none;
+    color: var(--text);
+    isolation: isolate;
+  }
+  .work-row__link::before {
+    content: '';
+    position: absolute;
+    inset: 0 calc(-1 * var(--s4));
+    z-index: -1;
+    background: var(--surface);
+    opacity: 0;
+    transition: opacity 200ms var(--ease);
+  }
+  .work-row__link:hover::before {
+    opacity: 0.55;
+  }
+  .work-row__code {
+    font-size: 2.75rem;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+    color: var(--text-muted);
+    transition: color 200ms var(--ease);
+  }
+  .work-row__link:hover .work-row__code {
+    color: var(--accent);
+  }
+  .work-row__main {
+    display: grid;
+    gap: var(--s2);
+  }
+  .work-row__title {
+    font-size: clamp(1.5rem, 1.1rem + 1.2vw, 2.125rem);
+    line-height: 1.1;
+  }
+  .work-row__deck {
+    color: var(--text-2);
+    max-width: 34em;
+    text-wrap: pretty;
+  }
+  .work-row__meta {
+    display: grid;
+    gap: var(--s2);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    padding-top: 6px;
+  }
+  .work-row__kind {
+    color: var(--text-2);
+  }
+  .work-row__arrow {
+    font-size: 1.5rem;
+    line-height: 1;
+    padding-top: 6px;
+    color: var(--text-muted);
+    transition:
+      transform 200ms var(--ease),
+      color 200ms var(--ease);
+  }
+  .work-row__link:hover .work-row__arrow {
+    transform: translateX(4px);
+    color: var(--accent);
+  }
+  .work-row__link:focus-visible {
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 900px) {
+    .work-row__link {
+      grid-template-columns: 4rem minmax(0, 1fr) 1.5rem;
+    }
+    .work-row__meta {
+      grid-column: 2;
+      grid-row: 2;
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--s2) var(--s4);
+      padding-top: 0;
+    }
+    .work-row__data {
+      flex-basis: 100%;
+    }
+    .work-row__arrow {
+      grid-column: 3;
+      grid-row: 1;
+    }
+  }
+  @media (max-width: 520px) {
+    .work-row__link {
+      grid-template-columns: minmax(0, 1fr) 1.5rem;
+      gap: var(--s3);
+      padding: var(--s5) 0;
+    }
+    .work-row__code {
+      grid-column: 1;
+      font-size: 1rem;
+      letter-spacing: 0.12em;
+      color: var(--accent-text);
+    }
+    .work-row__main,
+    .work-row__meta {
+      grid-column: 1;
+      grid-row: auto;
+    }
+    .work-row__arrow {
+      grid-column: 2;
+      grid-row: 1 / span 3;
+      align-self: center;
+    }
+  }
+</style>

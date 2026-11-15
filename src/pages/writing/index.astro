@@ -1,0 +1,113 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHead from '../../components/PageHead.astro';
+import Filters from '../../components/Filters.astro';
+import PostList from '../../components/PostList.astro';
+import { arms } from '../../data/site';
+import { getPosts } from '../../lib/content';
+import { href } from '../../lib/url';
+
+const posts = await getPosts();
+const options = arms.map((a) => ({
+  key: a.key,
+  label: a.label,
+  count: posts.filter((p) => p.data.arm === a.key).length,
+}));
+const seriesCount = (s: string) => posts.filter((p) => p.data.series === s).length;
+---
+
+<Base title="Writing" description="Technical notes, build logs and essays on AI/ML, software and philosophy.">
+  <PageHead
+    folio="03"
+    label="Writing"
+    title="Notes, logs and essays"
+    lede="Technical notes from the projects, what I learn shipping products, and essays on learning and building a life. One stream, filtered by arm."
+  />
+
+  <div class="wrap">
+    <section class="series" aria-labelledby="series-title">
+      <h2 id="series-title" class="label">Series</h2>
+      <div class="series__grid">
+        <a class="series__card" href={href('/writing/unfiltered')}>
+          <span class="series__name">Unfiltered</span>
+          <span class="series__desc">Essays in English. Thinking out loud, without the polish.</span>
+          <span class="series__count muted">{seriesCount('unfiltered')} {seriesCount('unfiltered') === 1 ? 'essay' : 'essays'}</span>
+        </a>
+        <a class="series__card" href={href('/writing/jemon-achi')}>
+          <span class="series__name bn" lang="bn">যেমন আছি</span>
+          <span class="series__desc">Writing in Bengali. “As I am.”</span>
+          <span class="series__count muted">{seriesCount('jemon-achi')} {seriesCount('jemon-achi') === 1 ? 'piece' : 'pieces'}</span>
+        </a>
+      </div>
+    </section>
+
+    <h2 class="visually-hidden">All posts</h2>
+    {
+      posts.length > 0 ? (
+        <>
+          <Filters target="post-list" label="Arm" options={options} total={posts.length} noun={['post', 'posts']} />
+          <PostList posts={posts} id="post-list" />
+          <div class="empty" data-filter-empty hidden>
+            <p>No posts in this arm yet.</p>
+          </div>
+        </>
+      ) : (
+        <div class="empty">
+          <p>The first posts are on their way.</p>
+          <p class="muted">Model to Decision notes start with the property valuation project.</p>
+        </div>
+      )
+    }
+  </div>
+</Base>
+
+<style>
+  .series {
+    display: grid;
+    gap: var(--s4);
+    margin-bottom: var(--s8);
+  }
+  .series__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s5);
+  }
+  .series__card {
+    position: relative;
+    display: grid;
+    gap: var(--s2);
+    padding: var(--s6);
+    background: var(--surface);
+    color: var(--text);
+    text-decoration: none;
+    border-top: 3px solid var(--text);
+    transition: border-color 200ms var(--ease);
+  }
+  .series__card:hover {
+    border-top-color: var(--accent);
+  }
+  .series__name {
+    font-size: clamp(1.75rem, 1.3rem + 1.5vw, 2.5rem);
+    font-weight: 500;
+    letter-spacing: var(--track-display);
+    line-height: 1.1;
+  }
+  .series__name.bn {
+    letter-spacing: 0;
+  }
+  .series__desc {
+    color: var(--text-2);
+  }
+  .series__count {
+    margin-top: var(--s3);
+    font-size: 0.875rem;
+  }
+  @media (max-width: 640px) {
+    .series__grid {
+      grid-template-columns: 1fr;
+    }
+    .series__card {
+      padding: var(--s5);
+    }
+  }
+</style>

@@ -1,0 +1,63 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHead from '../../components/PageHead.astro';
+import Filters from '../../components/Filters.astro';
+import ProductCards from '../../components/ProductCards.astro';
+import { site, productKinds } from '../../data/site';
+import { getProducts } from '../../lib/content';
+
+const products = await getProducts();
+const options = productKinds.map((k) => ({
+  key: k.key,
+  label: k.label,
+  count: products.filter((p) => p.data.kind === k.key).length,
+}));
+---
+
+<Base title="Products" description="Products from Aelnir, the studio Hasib founded, shown as outcomes: who they help and what changed.">
+  <PageHead
+    folio="02"
+    label="Products · Aelnir"
+    title="Products that solve problems"
+    lede="Apps, plugins and software from Aelnir, the studio I founded in Bangladesh. Each one is shown by who it helps and the problem it solves."
+  >
+    {
+      site.aelnirUrl && (
+        <p>
+          <a class="arrow-link" href={site.aelnirUrl} target="_blank" rel="noopener">
+            <span>Visit Aelnir</span>
+            <span class="arrow" aria-hidden="true">↗</span>
+            <span class="visually-hidden"> (opens in a new tab)</span>
+          </a>
+        </p>
+      )
+    }
+  </PageHead>
+
+  <div class="wrap">
+    {
+      products.length > 0 ? (
+        <>
+          <Filters target="product-list" label="Filter" options={options} total={products.length} noun={['product', 'products']} />
+          <div class="list-gap">
+            <ProductCards items={products} id="product-list" />
+            <div class="empty" data-filter-empty hidden>
+              <p>Nothing here yet.</p>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div class="empty">
+          <p>The first products are on their way.</p>
+          <p class="muted">Each will get a page here with the problem it solves and who uses it.</p>
+        </div>
+      )
+    }
+  </div>
+</Base>
+
+<style>
+  .list-gap {
+    margin-top: var(--s6);
+  }
+</style>
