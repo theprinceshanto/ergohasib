@@ -2,26 +2,36 @@
 import Base from '../../layouts/Base.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
 import { site } from '../../data/site';
-import { profile, experience, education, skills } from '../../data/cv';
+import { cvName, cvTitle, cvLocation, profile, experience, extraProjects, education, skills } from '../../data/cv';
 import { getWork } from '../../lib/content';
 import { href } from '../../lib/url';
 
 const work = await getWork();
+const contact = [
+  { label: cvLocation },
+  site.email && { label: site.email, url: `mailto:${site.email}` },
+  site.linkedin && { label: 'linkedin.com/in/ergohasib', url: site.linkedin },
+  site.github && { label: 'github.com/theprinceshanto', url: site.github },
+  { label: 'ergohasib.com', url: 'https://ergohasib.com' },
+].filter((c): c is { label: string; url?: string } => Boolean(c));
 ---
 
-<Base title="CV" description="CV of Hasib, machine learning engineering.">
+<Base title="CV" description={`CV of ${cvName}: machine learning engineering, software and quality.`}>
   <div class="wrap">
     <Breadcrumbs items={[{ label: 'About', href: '/about' }, { label: 'CV' }]} />
 
     <header class="cv-head">
-      <div>
-        <h1>Hasib</h1>
-        <p class="lede">Machine learning engineering</p>
+      <div class="cv-head__id">
+        <h1>{cvName}</h1>
+        <p class="lede">{cvTitle}</p>
+        <ul class="cv-contact">
+          {contact.map((c) => <li>{c.url ? <a class="link" href={c.url}>{c.label}</a> : c.label}</li>)}
+        </ul>
       </div>
       <div class="cv-head__actions">
         {
           site.cvPdf && (
-            <a class="btn" href={href(site.cvPdf)} download>
+            <a class="btn" href={href(site.cvPdf)} download="Al-Hasib-Prince-Shanto-CV.pdf">
               Download PDF
             </a>
           )
@@ -34,28 +44,6 @@ const work = await getWork();
       <section class="cv-row" aria-labelledby="cv-profile">
         <h2 id="cv-profile" class="label">Profile</h2>
         <p class="cv-profile">{profile}</p>
-      </section>
-
-      <section class="cv-row" aria-labelledby="cv-projects">
-        <h2 id="cv-projects" class="label">Projects</h2>
-        <ul class="cv-list">
-          {
-            work.map((p) => (
-              <li>
-                <p class="cv-item__title">
-                  <a class="link" href={href(`/work/${p.id}`)}>
-                    {p.data.code}: {p.data.title}
-                  </a>
-                  <span class="status" data-status={p.data.status}>
-                    {p.data.status}
-                  </span>
-                </p>
-                <p class="cv-item__sub">{p.data.deck}</p>
-                <p class="cv-item__meta muted">{p.data.data}</p>
-              </li>
-            ))
-          }
-        </ul>
       </section>
 
       <section class="cv-row" aria-labelledby="cv-experience">
@@ -74,6 +62,41 @@ const work = await getWork();
                     <li>{pt}</li>
                   ))}
                 </ul>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+
+      <section class="cv-row" aria-labelledby="cv-projects">
+        <h2 id="cv-projects" class="label">Projects</h2>
+        <ul class="cv-list">
+          {
+            extraProjects.map((p) => (
+              <li>
+                <p class="cv-item__title">{p.title}</p>
+                <p class="cv-item__meta muted">{p.stack}</p>
+                <ul class="cv-points">
+                  {p.points.map((pt) => (
+                    <li>{pt}</li>
+                  ))}
+                </ul>
+              </li>
+            ))
+          }
+          {
+            work.map((p) => (
+              <li>
+                <p class="cv-item__title">
+                  <a class="link" href={href(`/work/${p.id}`)}>
+                    {p.data.code}: {p.data.title}
+                  </a>
+                  <span class="status" data-status={p.data.status}>
+                    {p.data.status}
+                  </span>
+                </p>
+                <p class="cv-item__sub">{p.data.deck}</p>
+                <p class="cv-item__meta muted">{p.data.data}</p>
               </li>
             ))
           }
@@ -126,8 +149,25 @@ const work = await getWork();
     border-bottom: 1px solid var(--text);
   }
   .cv-head h1 {
-    font-size: clamp(3rem, 2rem + 4vw, 5rem);
-    letter-spacing: -0.04em;
+    font-size: clamp(2.5rem, 1.6rem + 3vw, 4rem);
+    letter-spacing: -0.035em;
+  }
+  .cv-head__id {
+    display: grid;
+    gap: var(--s2);
+  }
+  .cv-contact {
+    list-style: none;
+    margin: var(--s2) 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s1) var(--s4);
+    font-size: 0.9375rem;
+    color: var(--text-2);
+  }
+  .cv-contact li {
+    overflow-wrap: anywhere;
   }
   .cv-head__actions {
     display: flex;
@@ -218,6 +258,48 @@ const work = await getWork();
     }
     :global(body::before) {
       display: none;
+    }
+    /* A4, compact: the PDF is generated from this (scripts/render-cv.py). */
+    @page {
+      size: A4;
+      margin: 14mm 15mm;
+    }
+    :global(html) {
+      font-size: 12px;
+    }
+    :global(main) {
+      padding: 0;
+    }
+    :global(.wrap) {
+      max-width: none;
+      padding: 0;
+    }
+    .cv-head {
+      padding-block: 0 var(--s4);
+      border-bottom-width: 1.5px;
+    }
+    .cv-head h1 {
+      font-size: 2.6rem;
+    }
+    .cv-row {
+      grid-template-columns: 9rem minmax(0, 1fr);
+      padding-block: var(--s4);
+    }
+    .cv-profile {
+      font-size: 1.05rem;
+    }
+    .cv-list {
+      gap: var(--s3);
+    }
+    .cv-list > li,
+    .cv-skills div {
+      break-inside: avoid;
+    }
+    .cv-item__title {
+      font-size: 1.1rem;
+    }
+    .link {
+      text-decoration: none;
     }
   }
 </style>

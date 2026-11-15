@@ -1,13 +1,9 @@
 ---
 import Mark from './Mark.astro';
-import { site, missingSettings } from '../data/site';
+import { missingSettings, socials } from '../data/site';
 import { href } from '../lib/url';
 
-const social = [
-  { label: 'GitHub', url: site.github },
-  { label: 'LinkedIn', url: site.linkedin },
-  { label: 'Facebook', url: site.facebook },
-].filter((s): s is { label: string; url: string } => Boolean(s.url));
+const social = socials;
 
 const year = new Date().getFullYear();
 const showSetup = import.meta.env.DEV && missingSettings.length > 0;

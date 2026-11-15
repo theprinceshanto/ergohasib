@@ -1,13 +1,9 @@
 ---
 import Base from '../layouts/Base.astro';
 import PageHead from '../components/PageHead.astro';
-import { site } from '../data/site';
+import { site, socials } from '../data/site';
 
-const channels = [
-  site.github && { label: 'GitHub', url: site.github, note: 'Code for every project' },
-  site.linkedin && { label: 'LinkedIn', url: site.linkedin, note: 'Weekly posts and updates' },
-  site.facebook && { label: 'Facebook', url: site.facebook, note: 'Writing and personal news' },
-].filter((c): c is { label: string; url: string; note: string } => Boolean(c));
+const channels = socials;
 ---
 
 <Base title="Contact" description="How to reach Hasib: email, LinkedIn and GitHub.">

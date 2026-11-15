@@ -7,7 +7,7 @@ series: unfiltered
 draft: true
 ---
 
-I studied mathematics at Ananda Mohan College in Mymensingh. I liked the applied side best: probability, statistics, linear algebra, the parts that touch something real.
+I studied mathematics at Anandamohan College in Mymensingh. I liked the applied side best: probability, statistics, linear algebra, the parts that touch something real.
 
 Then I worked as a software quality engineer. The job was to find out whether software really works: test it, track where it breaks, and read the patterns in the failures. It taught me to check the numbers before anyone relies on them.
 

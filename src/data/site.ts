@@ -10,13 +10,16 @@ export const site = {
     'Hasib builds machine learning systems, from data to deployment, and writes about AI/ML, software and philosophy.',
   heroLine: 'Machine learning systems, from data to deployment.',
   heroLineIsDraft: true,
-  email: null as string | null,
-  github: null as string | null,
-  linkedin: null as string | null,
-  facebook: null as string | null,
+  email: 'ergohasib@gmail.com' as string | null,
+  github: 'https://github.com/theprinceshanto' as string | null,
+  linkedin: 'https://www.linkedin.com/in/ergohasib' as string | null,
+  x: 'https://x.com/ergohasib' as string | null,
+  facebook: 'https://www.facebook.com/ergohasib' as string | null,
+  youtube: 'https://www.youtube.com/@ergohasib' as string | null,
+  instagram: 'https://www.instagram.com/ergohasib/' as string | null,
   aelnirUrl: null as string | null,
   /** Path in /public, e.g. '/cv.pdf'. Null hides the download button. */
-  cvPdf: null as string | null,
+  cvPdf: '/cv.pdf' as string | null,
 };
 
 export const arms = [
@@ -61,6 +64,16 @@ export const nav = [
   { href: '/writing', label: 'Writing', hint: 'Notes, essays' },
   { href: '/about', label: 'About', hint: 'Story, CV' },
 ] as const;
+
+/** Social profiles in display order. Null entries are skipped everywhere. */
+export const socials = [
+  { label: 'LinkedIn', url: site.linkedin, note: 'Posts, projects and updates' },
+  { label: 'GitHub', url: site.github, note: 'Code for every project' },
+  { label: 'X', url: site.x, note: 'Short notes' },
+  { label: 'YouTube', url: site.youtube, note: 'Demos and walkthroughs' },
+  { label: 'Facebook', url: site.facebook, note: 'Writing and personal news' },
+  { label: 'Instagram', url: site.instagram, note: 'Life outside the screen' },
+].filter((s): s is { label: string; url: string; note: string } => Boolean(s.url));
 
 /** Names of settings still to fill in (shown only in dev). */
 export const missingSettings = (Object.keys(site) as (keyof typeof site)[]).filter(
