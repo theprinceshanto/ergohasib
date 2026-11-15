@@ -17,7 +17,7 @@ export const site = {
   facebook: 'https://www.facebook.com/ergohasib' as string | null,
   youtube: 'https://www.youtube.com/@ergohasib' as string | null,
   instagram: 'https://www.instagram.com/ergohasib/' as string | null,
-  aelnirUrl: null as string | null,
+  aelnirUrl: 'https://aelnir.com/' as string | null,
   /** Path in /public, e.g. '/cv.pdf'. Null hides the download button. */
   cvPdf: '/cv.pdf' as string | null,
 };

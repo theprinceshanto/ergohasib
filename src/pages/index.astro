@@ -86,7 +86,10 @@ const heroEnd = words.slice(-2).join(' ');
           <div class="home-block__meta">
             <p class="label label--accent">Selected products</p>
             <h2 id="products-title" class="home-block__title">Shipped</h2>
-            <p class="muted">Made through Aelnir, the studio I founded. Each solves one problem for one group of people.</p>
+            <p class="muted">
+              Made through {site.aelnirUrl ? <a class="link" href={site.aelnirUrl} target="_blank" rel="noopener">Aelnir</a> : 'Aelnir'}, the studio I
+              founded. Each solves one problem for one group of people.
+            </p>
             <a class="arrow-link" href={href('/products')}>
               <span>All products</span>
               <span class="arrow" aria-hidden="true">→</span>
