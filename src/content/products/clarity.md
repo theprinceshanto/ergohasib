@@ -7,7 +7,8 @@ users: Obsidian users who want to plan their days and grow their ideas in the sa
 problem: Tasks, habits and ideas end up scattered across separate apps, or locked in formats you cannot read without them.
 order: 2
 featured: true
-# store: https://obsidian.md/plugins?id=...
+store: https://github.com/theprinceshanto/obsidian-clarity
+storeLabel: Get it on GitHub
 ---
 
 ## What it does

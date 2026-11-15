@@ -8,6 +8,7 @@ users: Who it helps.
 problem: The problem they had.
 # result: What changed for them, with a number (users, rating, time saved).
 # store: https://link-to-store-listing
+# storeLabel: Get it on Google Play
 order: 4
 featured: false # shown on Home; feature at most three
 draft: true # remove when the product is live

@@ -63,7 +63,7 @@ const d = entry.data;
         d.store && (
           <p class="store">
             <a class="btn" href={d.store} target="_blank" rel="noopener">
-              Get {d.title}
+              {d.storeLabel ?? `Get ${d.title}`}
               <span class="visually-hidden"> (opens in a new tab)</span>
             </a>
           </p>

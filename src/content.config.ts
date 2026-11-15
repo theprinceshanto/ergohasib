@@ -46,6 +46,7 @@ const products = defineCollection({
     problem: z.string(),
     result: z.string().optional(), // what changed, with a number; add once you have one
     store: z.string().url().optional(),
+    storeLabel: z.string().optional(), // button text, e.g. "Visit Jonodut"; defaults to "Get <title>"
     order: z.number().default(0),
     featured: z.boolean().default(false), // shown on Home (max three)
     draft: z.boolean().default(false),

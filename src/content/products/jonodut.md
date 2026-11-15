@@ -7,6 +7,8 @@ users: Public leaders in Bangladesh and the teams who run their communication.
 problem: A leader needs a credible website and a direct line to constituents, in Bangla and English, without hiring a web team.
 order: 3
 featured: true
+store: https://jonodut.com/
+storeLabel: Visit jonodut.com
 ---
 
 ## What it does
