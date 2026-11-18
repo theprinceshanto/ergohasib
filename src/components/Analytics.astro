@@ -1,0 +1,48 @@
+---
+/**
+ * Google Tag Manager. Rendered by src/layouts/Base.astro, which every page uses,
+ * so any new page gets it automatically. Set the container ID in src/data/site.ts
+ * (gtmId); null turns it off everywhere.
+ *
+ * Only in the built site: `npm run dev` never loads it, so local testing
+ * doesn't show up in your analytics.
+ *
+ * part="head" goes first inside <head>, part="body" first inside <body>.
+ */
+import { site } from '../data/site';
+
+interface Props {
+  part: 'head' | 'body';
+}
+const { part } = Astro.props;
+const id = import.meta.env.PROD ? site.gtmId : null;
+---
+
+{
+  id && part === 'head' && (
+    <script is:inline define:vars={{ id }}>
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s),
+          dl = l != 'dataLayer' ? '&l=' + l : '';
+        j.async = true;
+        j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, 'script', 'dataLayer', id);
+    </script>
+  )
+}
+{
+  id && part === 'body' && (
+    <noscript>
+      <iframe
+        src={`https://www.googletagmanager.com/ns.html?id=${id}`}
+        height="0"
+        width="0"
+        style="display:none;visibility:hidden"
+        title="Google Tag Manager"></iframe>
+    </noscript>
+  )
+}

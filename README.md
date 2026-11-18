@@ -26,3 +26,9 @@ Copy the `_template.md` in each folder (files starting with `_` are never publis
 - `src/content/products/` — Aelnir apps. The Products page shows an empty state until the first file exists.
 
 The two posts in `writing/` are drafts written from the brand plan; rewrite them in your own words before removing `draft: true`.
+
+## Analytics (Google Tag Manager)
+
+Container `GTM-KL43ZTQB`, set as `gtmId` in `src/data/site.ts`. `src/components/Analytics.astro` is rendered by `src/layouts/Base.astro`, so every page that uses the base layout (all of them, and any new one) gets it automatically. It only loads in the built site, never in `npm run dev`.
+
+`npm run build` ends with `scripts/check-gtm.mjs`, which fails the build (and so the deploy) if any page is missing the tag. Set `gtmId` to `null` to turn analytics off everywhere.
