@@ -3,7 +3,7 @@ import Base from '../../layouts/Base.astro';
 import PageHead from '../../components/PageHead.astro';
 import Filters from '../../components/Filters.astro';
 import PostList from '../../components/PostList.astro';
-import { arms } from '../../data/site';
+import { arms, series } from '../../data/site';
 import { getPosts } from '../../lib/content';
 import { href } from '../../lib/url';
 
@@ -21,23 +21,27 @@ const seriesCount = (s: string) => posts.filter((p) => p.data.series === s).leng
     folio="03"
     label="Writing"
     title="Notes, logs and essays"
-    lede="Technical notes from the projects, what I learn shipping products, and essays on learning and building a life. One stream, filtered by arm."
+    lede="Technical notes from the projects, and two series: Existential Debugging, on machines, humans and the absurdity of both, and The Accidental Entrepreneur, on building products and learning how markets work. One stream, filtered by arm."
   />
 
   <div class="wrap">
     <section class="series" aria-labelledby="series-title">
       <h2 id="series-title" class="label">Series</h2>
       <div class="series__grid">
-        <a class="series__card" href={href('/writing/unfiltered')}>
-          <span class="series__name">Unfiltered</span>
-          <span class="series__desc">Essays in English. Thinking out loud, without the polish.</span>
-          <span class="series__count muted">{seriesCount('unfiltered')} {seriesCount('unfiltered') === 1 ? 'essay' : 'essays'}</span>
-        </a>
-        <a class="series__card" href={href('/writing/jemon-achi')}>
-          <span class="series__name bn" lang="bn">যেমন আছি</span>
-          <span class="series__desc">Writing in Bengali. “As I am.”</span>
-          <span class="series__count muted">{seriesCount('jemon-achi')} {seriesCount('jemon-achi') === 1 ? 'piece' : 'pieces'}</span>
-        </a>
+        {
+          series.map((x) => {
+            const n = seriesCount(x.key);
+            return (
+              <a class="series__card" href={href(`/writing/${x.key}`)}>
+                <span class="series__name">{x.name}</span>
+                <span class="series__desc">{x.tagline}</span>
+                <span class="series__count muted">
+                  {n} {n === 1 ? 'post' : 'posts'}
+                </span>
+              </a>
+            );
+          })
+        }
       </div>
     </section>
 

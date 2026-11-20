@@ -3,7 +3,6 @@ title: From a maths degree to machine learning engineering
 description: Why someone who spent years testing software now builds models, and what testing taught me about them.
 date: 2026-11-17
 arm: philosophy
-series: unfiltered
 draft: true
 ---
 

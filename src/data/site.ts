@@ -42,6 +42,25 @@ export const arms = [
   },
 ] as const;
 
+/** Writing series. Keys are also the URLs: /writing/<key>. */
+export const series = [
+  {
+    key: 'existential-debugging',
+    name: 'Existential Debugging',
+    tagline: 'Debugging machines, humans, and the absurdity of existence.',
+    description:
+      'Ideas from mathematics, machine learning and computer science, turned on the strange contradictions of human behaviour.',
+  },
+  {
+    key: 'accidental-entrepreneur',
+    name: 'The Accidental Entrepreneur',
+    tagline: 'Building products, shipping imperfect software, and discovering how markets actually work.',
+    description: 'Real lessons from Reelock, Clarity, Jonodut and whatever comes next: what I assumed, and what the market did.',
+  },
+] as const;
+export type SeriesKey = (typeof series)[number]['key'];
+export const seriesInfo = (k: string) => series.find((s) => s.key === k);
+
 export type ArmKey = (typeof arms)[number]['key'];
 export const armLabel = (k: string) => arms.find((a) => a.key === k)?.label ?? k;
 

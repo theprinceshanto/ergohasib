@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import { armLabel } from '../data/site';
+import { armLabel, seriesInfo } from '../data/site';
 import { href, formatDate } from '../lib/url';
 
 interface Props {
@@ -11,7 +11,6 @@ interface Props {
 }
 const { posts, id, headingLevel = 'h2', compact = false } = Astro.props;
 const H = headingLevel;
-const seriesName = { unfiltered: 'Unfiltered', 'jemon-achi': 'যেমন আছি' } as const;
 ---
 
 <ol class:list={['posts', { 'posts--compact': compact }]} id={id}>
@@ -23,9 +22,7 @@ const seriesName = { unfiltered: 'Unfiltered', 'jemon-achi': 'যেমন আ�
             <time datetime={post.data.date.toISOString().slice(0, 10)}>{formatDate(post.data.date)}</time>
             <span class="post__arm">{armLabel(post.data.arm)}</span>
             {post.data.series && (
-              <span class:list={['post__series', { bn: post.data.series === 'jemon-achi' }]}>
-                {seriesName[post.data.series]}
-              </span>
+              <span class="post__series">{seriesInfo(post.data.series)?.name}</span>
             )}
             {post.data.draft && <span class="draft-badge">Draft</span>}
           </span>

@@ -22,7 +22,7 @@ npm run preview  # serve dist/
 Copy the `_template.md` in each folder (files starting with `_` are never published):
 
 - `src/content/work/` — ML projects. `featured: true` puts one on Home (max three).
-- `src/content/writing/` — posts. `series: unfiltered` or `jemon-achi`; `lang: bn` for Bengali. `draft: true` keeps it off the built site.
+- `src/content/writing/` — posts. `series: existential-debugging` or `accidental-entrepreneur` (names and taglines live in `src/data/site.ts`); `lang: bn` for Bengali. `draft: true` keeps it off the built site.
 - `src/content/products/` — Aelnir apps. The Products page shows an empty state until the first file exists.
 
 The two posts in `writing/` are drafts written from the brand plan; rewrite them in your own words before removing `draft: true`.

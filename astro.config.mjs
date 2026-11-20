@@ -9,10 +9,15 @@ export default defineConfig({
   trailingSlash: 'ignore',
   build: { format: 'directory' },
   devToolbar: { enabled: false },
+  // Old series URLs (renamed 2026-11-20) still work.
+  redirects: {
+    '/writing/unfiltered': '/writing/existential-debugging',
+    '/writing/jemon-achi': '/writing/accidental-entrepreneur',
+  },
   integrations: [
     sitemap({
       // The 404 page should not be indexed.
-      filter: (page) => !page.includes('/404'),
+      filter: (page) => !page.includes('/404') && !/\/writing\/(unfiltered|jemon-achi)\/?$/.test(page),
     }),
   ],
 });

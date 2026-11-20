@@ -3,7 +3,7 @@ import type { GetStaticPaths } from 'astro';
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Breadcrumbs from '../../components/Breadcrumbs.astro';
-import { armLabel } from '../../data/site';
+import { armLabel, seriesInfo } from '../../data/site';
 import { getPosts } from '../../lib/content';
 import { href, formatDate } from '../../lib/url';
 
@@ -15,11 +15,8 @@ export const getStaticPaths = (async () => {
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 const d = entry.data;
-const series = d.series
-  ? d.series === 'unfiltered'
-    ? { name: 'Unfiltered', href: '/writing/unfiltered', bn: false }
-    : { name: 'যেমন আছি', href: '/writing/jemon-achi', bn: true }
-  : null;
+const info = d.series ? seriesInfo(d.series) : undefined;
+const series = info ? { name: info.name, href: `/writing/${info.key}`, bn: false } : null;
 const isBn = d.lang === 'bn';
 ---
 

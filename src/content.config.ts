@@ -29,7 +29,7 @@ const writing = defineCollection({
     description: z.string(),
     date: z.coerce.date(),
     arm: z.enum(['ai-ml', 'software', 'philosophy']),
-    series: z.enum(['unfiltered', 'jemon-achi']).optional(),
+    series: z.enum(['existential-debugging', 'accidental-entrepreneur']).optional(), // see series in src/data/site.ts
     lang: z.enum(['en', 'bn']).default('en'),
     draft: z.boolean().default(false),
   }),
