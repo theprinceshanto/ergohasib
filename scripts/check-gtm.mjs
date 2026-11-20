@@ -22,8 +22,13 @@ const walk = (dir) => {
 };
 walk(dist);
 
+// Redirect stubs from `redirects` in astro.config.mjs are not real pages: they forward
+// instantly with a meta refresh, so the visit is counted on the page they lead to.
+const isRedirect = (html) => /<meta\s+http-equiv="refresh"/i.test(html);
+
 const missing = pages.filter((p) => {
   const html = readFileSync(p, 'utf8');
+  if (isRedirect(html)) return false;
   return !(html.includes('googletagmanager.com/gtm.js') && html.includes(id) && html.includes('ns.html?id='));
 });
 
@@ -32,4 +37,8 @@ if (missing.length) {
   for (const p of missing) console.error('  ' + p);
   process.exit(1);
 }
-console.log(`check-gtm: all ${pages.length} pages have Google Tag Manager (${id}).`);
+const redirects = pages.filter((p) => isRedirect(readFileSync(p, 'utf8'))).length;
+console.log(
+  `check-gtm: all ${pages.length - redirects} pages have Google Tag Manager (${id})` +
+    (redirects ? `; ${redirects} redirect stub(s) skipped.` : '.'),
+);
